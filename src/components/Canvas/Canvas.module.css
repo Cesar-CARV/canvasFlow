@@ -1,0 +1,32 @@
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.game {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.game__display {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border: solid 1px;
+  image-rendering: auto;
+}
+
+.game__display:focus,
+.game__display:active {
+  outline: none;
+}
