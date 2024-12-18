@@ -1,13 +1,10 @@
 import { create } from "zustand";
 
 const useCanvasStore = create((set) => ({
-  shapeFocus: undefined,
   shapesSelected: [],
   shapeCopied: undefined,
 
   setShapesSelected: (shapes) => set(() => ({ shapesSelected: shapes })),
-
-  setShapeFocus: (shape) => set(() => ({ shapeFocus: shape })),
 
   removeShapeSelected: (shape) =>
     set((state) => ({

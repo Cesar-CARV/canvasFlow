@@ -114,12 +114,12 @@ export default class Shape extends ObjectNode {
     copyShape.borderType = this.borderType;
 
     return copyShape;
-  }
+  };
 
   copy = () => {
     const copiedShape = this.createCopy();
     useCanvasStore.getState().setShapeCopied(copiedShape);
-  }
+  };
 
   clone = () => {
     const cloneShape = this.createCopy();
@@ -215,10 +215,7 @@ export default class Shape extends ObjectNode {
       }
     }
 
-    if (
-      useCanvasStore.getState().shapeFocus === this ||
-      useCanvasStore?.getState()?.shapesSelected?.includes(this)
-    ) {
+    if (useCanvasStore?.getState()?.shapesSelected?.includes(this)) {
       ctx.beginPath();
       ctx.strokeStyle = "#0fa4ff";
       ctx.lineWidth = 1;
@@ -236,11 +233,7 @@ export default class Shape extends ObjectNode {
   };
 
   steps = (deltatime) => {
-    if (
-      useCanvasStore.getState().shapeFocus !== this &&
-      !useCanvasStore?.getState()?.shapesSelected?.includes(this)
-    )
-      return;
+    if (!useCanvasStore?.getState()?.shapesSelected?.includes(this)) return;
 
     // Clone
     if (this._GAME.input.GetKeyDown("d")) {
