@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useRef } from "react";
 import { Game } from "recreo";
-import RoomTest from "../recreo/RoomTest.js";
+import RoomTest from "../recreo/Rooms/RoomTest";
 
 // Crea el contexto
 const CanvasContext = createContext();

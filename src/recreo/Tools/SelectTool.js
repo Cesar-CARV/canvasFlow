@@ -1,5 +1,5 @@
 import { ObjectNode, Vector2 } from "recreo";
-import useCanvasStore from "../store/CanvasStore";
+import useCanvasStore from "../../store/CanvasStore";
 
 export default class SelectTool extends ObjectNode {
   constructor(GAME) {

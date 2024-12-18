@@ -1,6 +1,6 @@
 import { Room } from "recreo";
-import Shape from "./Shape";
-import SelectTool from "./SelectTool";
+import Shape from "../Objects/Shape";
+import SelectTool from "../Tools/SelectTool";
 
 class RoomTest extends Room {
   constructor(GAME) {
