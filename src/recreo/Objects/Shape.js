@@ -243,7 +243,6 @@ export default class Shape extends ObjectNode {
     // Delete
     if (this._GAME.input.GetKeyDown("Backspace")) {
       useCanvasStore.getState().removeShapeSelected(this);
-      useCanvasStore.getState().setShapeFocus(undefined);
       this.kamikaze();
     }
 

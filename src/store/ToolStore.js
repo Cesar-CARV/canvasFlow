@@ -1,11 +1,5 @@
 import { create } from "zustand";
 
-/**
- *
- * @param {"SELECT" | "PEN" | EASER | "MAKE_SHAPE"} tool
- */
-const handleTool = (tool) => set(() => ({ current: tool }));
-
 const useToolStore = create((set) => ({
   TOOLS: {
     SELECT: "SELECT",
@@ -13,8 +7,8 @@ const useToolStore = create((set) => ({
     EASER: "EASER",
     MAKE_SHAPE: "MAKE_SHAPE",
   },
-  current: undefined,
-  setTool: handleTool,
+  current: "SELECT",
+  setTool: (tool) => set((state) => ({ current: state.TOOLS[tool] })),
 }));
 
-export default useStore;
+export default useToolStore;
