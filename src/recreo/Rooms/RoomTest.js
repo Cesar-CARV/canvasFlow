@@ -1,5 +1,6 @@
 import { Room } from "recreo";
-import Shape from "./Shape";
+import Shape from "../Objects/Shape";
+import SelectTool from "../Tools/SelectTool/SelectTool";
 
 class RoomTest extends Room {
   constructor(GAME) {
@@ -11,6 +12,7 @@ class RoomTest extends Room {
     shape.setRadius(80, 0, 0, 0);
 
     this.addInstance(shape, false, "shape01");
+    this.addInstance(new SelectTool(GAME), false, "select-tool");
   }
 }
 

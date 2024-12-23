@@ -1,6 +1,5 @@
 import { ObjectNode, Vector2 } from "recreo";
-import useStore from "../store/CanvasStore";
-("../store/CanvasStore.js");
+import useCanvasStore from "../../store/CanvasStore";
 
 export default class Shape extends ObjectNode {
   #TYPES = { RECT: "RECT", CIRCLE: "CIRCLE" };
@@ -96,10 +95,8 @@ export default class Shape extends ObjectNode {
     this.radius = [topLeft, topRight, bottomLeft, bottomRight];
   };
 
-  clone = () => {
-    if (!this.focus) return;
-
-    const cloneShape = new Shape(
+  createCopy = () => {
+    const copyShape = new Shape(
       this._GAME,
       this.position.x + 10,
       this.position.y + 10,
@@ -107,40 +104,39 @@ export default class Shape extends ObjectNode {
       this.size.y
     );
 
-    cloneShape.border = this.border;
-    cloneShape.borderWidth = this.borderWidth;
-    cloneShape.opacity = this.opacity;
-    cloneShape.borderColor = this.borderColor;
-    cloneShape.backgroundColor = this.backgroundColor;
-    cloneShape.radius = this.radius;
-    cloneShape.type = this.type;
-    cloneShape.borderType = this.borderType;
+    copyShape.border = this.border;
+    copyShape.borderWidth = this.borderWidth;
+    copyShape.opacity = this.opacity;
+    copyShape.borderColor = this.borderColor;
+    copyShape.backgroundColor = this.backgroundColor;
+    copyShape.radius = this.radius;
+    copyShape.type = this.type;
+    copyShape.borderType = this.borderType;
+
+    return copyShape;
+  };
+
+  copy = () => {
+    const copiedShape = this.createCopy();
+    useCanvasStore.getState().setShapeCopied(copiedShape);
+  };
+
+  clone = () => {
+    const cloneShape = this.createCopy();
 
     this._GAME.currentRoom.addInstance(
       cloneShape,
       false,
-      this._NAME + "-clone" + Math.random() * 10
+      this._NAME +
+        "-clone" +
+        (Math.random() * 10).toFixed(5).toString().replace(".", "")
     );
-  };
 
-  checkMousePosition = () => {
-    const mouseCoord = this._GAME.input.GetMouseCords();
-
-    if (
-      mouseCoord.x >= this.position.x &&
-      mouseCoord.x <= this.position.x + this.size.x &&
-      mouseCoord.y >= this.position.y &&
-      mouseCoord.y <= this.position.y + this.size.y
-    ) {
-      if (this._GAME.input.GetMouseDown(0)) {
-        if (useStore.getState().shapeFocus) return;
-
-        useStore.getState().setShapeFocus(this);
-        this.focus = true;
-      }
-    } else if (this.focus && this._GAME.input.GetMouseDown(0)) {
-      this.focus = false;
-      useStore.getState().setShapeFocus(undefined);
+    if (useCanvasStore.getState().shapesSelected.length === 0) {
+      useCanvasStore.getState().setShapeFocus(cloneShape);
+    } else {
+      useCanvasStore.getState().removeShapeSelected(this);
+      useCanvasStore.getState().addShapeSelected(cloneShape);
     }
   };
 
@@ -219,42 +215,20 @@ export default class Shape extends ObjectNode {
       }
     }
 
-    if (this.focus) {
+    if (useCanvasStore?.getState()?.shapesSelected?.includes(this)) {
       ctx.beginPath();
       ctx.strokeStyle = "#0fa4ff";
-      ctx.lineWidth = 2;
-      ctx.setLineDash(this.#BORDER_TYPES.DASHED);
+      ctx.lineWidth = 1;
+      ctx.setLineDash(this.#BORDER_TYPES.LINE);
       ctx.roundRect(
-        this.position.x - 6,
-        this.position.y - 6,
-        this.size.x + 12,
-        this.size.y + 12
+        this.position.x - 2,
+        this.position.y - 2,
+        this.size.x + 4,
+        this.size.y + 4
       );
       ctx.stroke();
       ctx.setLineDash(this.#BORDER_TYPES.LINE);
       ctx.closePath();
     }
-  };
-
-  steps = (deltatime) => {
-    this.checkMousePosition();
-
-    if (this._GAME.input.GetKeyDown("c")) {
-      this.clone();
-    }
-
-    if (!this.focus) return;
-
-    this.velocity.x =
-      (this._GAME.input.GetKeyPress("d") - this._GAME.input.GetKeyPress("a")) *
-      400 *
-      deltatime;
-
-    this.velocity.y =
-      (this._GAME.input.GetKeyPress("s") - this._GAME.input.GetKeyPress("w")) *
-      400 *
-      deltatime;
-
-    this.position = this.position.Sum(this.velocity);
   };
 }
