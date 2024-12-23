@@ -6,6 +6,7 @@ export default class TransformRect extends ObjectNode {
     super(GAME, 100, 100, 50, 50);
     this.padding = 10;
     this.visible = false;
+    this.CtrlKey = false;
 
     this.minSize = new Vector2(30, 30);
     this.lastMouseCoords = new Vector2();
@@ -18,6 +19,11 @@ export default class TransformRect extends ObjectNode {
 
     this.draging = false;
     this.resizing = false;
+
+    // this is used on resize func
+    this.initShapes = [];
+    this.initSize = {};
+    this.initPos = {};
   }
 
   /**
@@ -110,10 +116,14 @@ export default class TransformRect extends ObjectNode {
 
     this.position.x += moveX;
     this.position.y += moveY;
+    this.initPos.x += moveX;
+    this.initPos.y += moveY;
 
-    useCanvasStore.getState().shapesSelected.forEach((shape) => {
+    useCanvasStore.getState().shapesSelected.forEach((shape, i) => {
       shape.position.x += moveX;
       shape.position.y += moveY;
+      this.initShapes[i].position.x += moveX;
+      this.initShapes[i].position.y += moveY;
     });
 
     this.lastMouseCoords = mouseCoords;
@@ -122,6 +132,8 @@ export default class TransformRect extends ObjectNode {
   resize = (mouseCoords) => {
     const diffY = mouseCoords.y - this.lastMouseCoords.y;
     const diffX = mouseCoords.x - this.lastMouseCoords.x;
+    let diffSizeX = this.size.x;
+    let diffSizeY = this.size.y;
 
     // TOP
     if (this.directions.top) {
@@ -153,11 +165,68 @@ export default class TransformRect extends ObjectNode {
       }
     }
 
+    diffSizeX = this.size.x - diffSizeX;
+    diffSizeY = this.size.y - diffSizeY;
+
     this.lastMouseCoords = mouseCoords;
+
+    if (
+      !this.directions.bottom &&
+      !this.directions.top &&
+      !this.directions.left &&
+      !this.directions.right
+    )
+      return;
+
+    const many = useCanvasStore.getState().shapesSelected.length > 1;
+
+    useCanvasStore.getState().shapesSelected.forEach((shape, i) => {
+      if (!many) {
+        shape.size.x += diffSizeX;
+        shape.size.y += diffSizeY;
+
+        // TOP
+        if (this.directions.top) {
+          shape.position.y += -diffSizeY;
+        }
+
+        // LEFT
+        if (this.directions.left) {
+          shape.position.x += -diffSizeX;
+        }
+      } else if (many) {
+        // Relative Size
+        const proportion = {
+          x: (this.size.x * 100) / this.initSize.x,
+          y: (this.size.y * 100) / this.initSize.y,
+        };
+        shape.size.x = (this.initShapes[i].size.x * proportion.x) / 100;
+        shape.size.y = (this.initShapes[i].size.y * proportion.y) / 100;
+
+        // Relative Pos
+        const postDiffX = this.initPos.x - this.position.x;
+        const postDiffY = this.initPos.y - this.position.y;
+        shape.position.x =
+          this.position.x +
+          (this.size.x *
+            (((this.initShapes[i].position.x - postDiffX - this.position.x) *
+              100) /
+              this.initSize.x)) /
+            100;
+
+        shape.position.y =
+          this.position.y +
+          (this.size.y *
+            (((this.initShapes[i].position.y - postDiffY - this.position.y) *
+              100) /
+              this.initSize.y)) /
+            100;
+      }
+    });
   };
 
   show = () => {
-    if (!this._PARENT.resizing || this.visible) return;
+    if (!this._PARENT.transform || this.visible) return;
 
     const shapesSelected = useCanvasStore.getState().shapesSelected;
 
@@ -184,17 +253,102 @@ export default class TransformRect extends ObjectNode {
 
   /**
    *
+   * @param {number} deltatime
+   */
+  checkKeyActions = (deltatime) => {
+    this.CtrlKey = this._GAME.input.GetKeyPress("Control");
+    const deleteShape = this._GAME.input.GetKeyDown("Backspace");
+    const cloneshape = this._GAME.input.GetKeyDown("d");
+
+    const shapes = useCanvasStore.getState().shapesSelected;
+
+    // Move
+    const velocityX =
+      (this._GAME.input.GetKeyPress("ArrowRight") -
+        this._GAME.input.GetKeyPress("ArrowLeft")) *
+      10 *
+      deltatime;
+
+    const velocityY =
+      (this._GAME.input.GetKeyPress("ArrowDown") -
+        this._GAME.input.GetKeyPress("ArrowUp")) *
+      10 *
+      deltatime;
+
+    this.position.x += velocityX;
+    this.position.y += velocityY;
+
+    for (let i = 0; i < shapes.length; i++) {
+      if (cloneshape) {
+        shapes[i].clone();
+      }
+      if (deleteShape) {
+        useCanvasStore.getState().removeShapeSelected(shapes[i]);
+        shapes[i].kamikaze();
+      }
+
+      shapes[i].position.x += velocityX;
+      shapes[i].position.y += velocityY;
+    }
+
+    if (cloneshape) {
+      this.visible = false;
+      this.show();
+    }
+
+    if (deleteShape) {
+      this._PARENT.transform = false;
+      this.visible = false;
+    }
+  };
+
+  /**
+   *
    * @param {CanvasRenderingContext2D} ctx
    */
   draw = (ctx) => {
-    if (!this._PARENT.resizing) return;
+    if (!this._PARENT.transform) return;
     ctx.save();
     ctx.fillStyle = "#F6FFC155";
-    ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
+    ctx.fillRect(
+      this.position.x - 4,
+      this.position.y - 4,
+      this.size.x + 8,
+      this.size.y + 8
+    );
     ctx.strokeStyle = "#F6FFC1";
     ctx.lineWidth = 4;
-    ctx.strokeRect(this.position.x, this.position.y, this.size.x, this.size.y);
+    ctx.strokeRect(
+      this.position.x - 4,
+      this.position.y - 4,
+      this.size.x + 8,
+      this.size.y + 8
+    );
     ctx.restore();
+  };
+
+  setResizingInitStates = () => {
+    // Set initSize
+    if (!this.initSize?.x && !this.initSize?.y) {
+      this.initSize = { x: this.size.x, y: this.size.y };
+    }
+
+    // Set initPos
+    if (!this.initPos?.x && !this.initPos?.y) {
+      this.initPos = { x: this.position.x, y: this.position.y };
+    }
+
+    // Set initShapes
+    if (this.initShapes.length === 0) {
+      this.initShapes = useCanvasStore
+        .getState()
+        .shapesSelected.map((shape) => {
+          return {
+            size: { x: shape.size.x, y: shape.size.y },
+            position: { x: shape.position.x, y: shape.position.y },
+          };
+        });
+    }
   };
 
   /**
@@ -202,7 +356,7 @@ export default class TransformRect extends ObjectNode {
    * @param {number} deltatime
    */
   steps = (deltatime) => {
-    if (!this._PARENT.resizing) return;
+    if (!this._PARENT.transform) return;
 
     const mouseCoords = this._GAME.input.GetMouseCords();
 
@@ -210,6 +364,8 @@ export default class TransformRect extends ObjectNode {
       this.lastMouseCoords = mouseCoords;
       this.checkResizeAreas(mouseCoords);
       this.checkDragArea(mouseCoords);
+
+      this.setResizingInitStates();
     }
 
     if (this._GAME.input.GetMousePress(0)) {
@@ -227,9 +383,12 @@ export default class TransformRect extends ObjectNode {
         ) &&
         this.visible
       ) {
-        this._PARENT.resizing = false;
+        this._PARENT.transform = false;
         this.visible = false;
         useCanvasStore.getState().setShapesSelected([]);
+        this.initShapes = [];
+        this.initSize = {};
+        this.initPos = {};
       }
 
       this.directions = {
@@ -243,5 +402,7 @@ export default class TransformRect extends ObjectNode {
     }
 
     this.show();
+
+    this.checkKeyActions(deltatime);
   };
 }

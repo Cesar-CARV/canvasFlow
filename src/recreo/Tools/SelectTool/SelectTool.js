@@ -7,7 +7,7 @@ export default class SelectTool extends ObjectNode {
   constructor(GAME) {
     super(GAME, 0, 0, 0, 0);
     this.selecting = false;
-    this.resizing = false;
+    this.transform = false;
     this.last;
 
     this.selectRect = new SelectRect(GAME);
@@ -22,7 +22,7 @@ export default class SelectTool extends ObjectNode {
    */
   steps = (deltatime) => {
     if (this._GAME.input.GetMouseDown(0)) {
-      if (!this.resizing) {
+      if (!this.transform) {
         this.selecting = true;
         const mouseCoord = this._GAME.input.GetMouseCords();
         this.selectRect.position.x = mouseCoord.x;
@@ -33,12 +33,12 @@ export default class SelectTool extends ObjectNode {
     }
     if (this._GAME.input.GetMouseUp(0)) {
       this.selecting = false;
-      this.resizing = useCanvasStore.getState().shapesSelected[0] !== undefined;
-      // if (this.resizing && !this.transformRect.visible) {
+      this.transform = useCanvasStore.getState().shapesSelected[0] !== undefined;
+      // if (this.transform && !this.transformRect.visible) {
       //   this.transformRect.show();
       // }
     }
 
-    // console.log(this.selecting, this.resizing);
+    // console.log(this.selecting, this.transform);
   };
 }

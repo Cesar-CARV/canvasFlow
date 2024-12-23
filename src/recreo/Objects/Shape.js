@@ -231,34 +231,4 @@ export default class Shape extends ObjectNode {
       ctx.closePath();
     }
   };
-
-  steps = (deltatime) => {
-    if (!useCanvasStore?.getState()?.shapesSelected?.includes(this)) return;
-
-    // Clone
-    if (this._GAME.input.GetKeyDown("d")) {
-      this.clone();
-    }
-
-    // Delete
-    if (this._GAME.input.GetKeyDown("Backspace")) {
-      useCanvasStore.getState().removeShapeSelected(this);
-      this.kamikaze();
-    }
-
-    // Move
-    this.velocity.x =
-      (this._GAME.input.GetKeyPress("ArrowRight") -
-        this._GAME.input.GetKeyPress("ArrowLeft")) *
-      10 *
-      deltatime;
-
-    this.velocity.y =
-      (this._GAME.input.GetKeyPress("ArrowDown") -
-        this._GAME.input.GetKeyPress("ArrowUp")) *
-      10 *
-      deltatime;
-
-    this.position = this.position.Sum(this.velocity);
-  };
 }
