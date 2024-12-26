@@ -1,5 +1,6 @@
 import { ObjectNode, Vector2 } from "recreo";
 import useCanvasStore from "../../../store/CanvasStore";
+import useToolStore from "../../../store/ToolStore";
 import SelectRect from "./SelectRect";
 import TransformRect from "./TransformRect";
 
@@ -8,7 +9,6 @@ export default class SelectTool extends ObjectNode {
     super(GAME, 0, 0, 0, 0);
     this.selecting = false;
     this.transform = false;
-    this.last;
 
     this.selectRect = new SelectRect(GAME);
     this.transformRect = new TransformRect(GAME);
@@ -20,7 +20,12 @@ export default class SelectTool extends ObjectNode {
    *
    * @param {number} deltatime
    */
-  steps = (deltatime) => {
+  steps = () => {
+    if (
+      useToolStore.getState().current !== useToolStore.getState().TOOLS.SELECT
+    )
+      return;
+    
     if (this._GAME.input.GetMouseDown(0)) {
       if (!this.transform) {
         this.selecting = true;
@@ -33,12 +38,8 @@ export default class SelectTool extends ObjectNode {
     }
     if (this._GAME.input.GetMouseUp(0)) {
       this.selecting = false;
-      this.transform = useCanvasStore.getState().shapesSelected[0] !== undefined;
-      // if (this.transform && !this.transformRect.visible) {
-      //   this.transformRect.show();
-      // }
+      this.transform =
+        useCanvasStore.getState().shapesSelected[0] !== undefined;
     }
-
-    // console.log(this.selecting, this.transform);
   };
 }
