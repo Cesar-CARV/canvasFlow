@@ -27,14 +27,7 @@ export default class Line extends ObjectNode {
     this.opacity = "ff";
     this.lineColor = "#ff0000";
 
-    this.vertexs = new Array(26).fill(1).map((_, i) => ({
-      x: i * 2,
-      y: 20 + Math.floor(Math.sin(i) * 10),
-    }));
-    // this.vertexs = [
-    //   { x: 0, y: 0 },
-    //   { x: w, y: 0 },
-    // ];
+    this.vertexs = [];
 
     this.lastVertex = this.vertexs.map((vx) => ({ x: vx.x, y: vx.y }));
 
