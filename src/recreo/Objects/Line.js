@@ -1,5 +1,6 @@
 import { ObjectNode, Vector2 } from "recreo";
 import useCanvasStore from "../../store/CanvasStore";
+import useToolStore from "../../store/ToolStore";
 
 export default class Line extends ObjectNode {
   #LINE_TYPE = { LINE: [100, 0], DASHED: [6, 4], DOTTED: [2, 2] };
@@ -27,14 +28,7 @@ export default class Line extends ObjectNode {
     this.opacity = "ff";
     this.lineColor = "#ff0000";
 
-    this.vertexs = new Array(26).fill(1).map((_, i) => ({
-      x: i * 2,
-      y: 20 + Math.floor(Math.sin(i) * 10),
-    }));
-    // this.vertexs = [
-    //   { x: 0, y: 0 },
-    //   { x: w, y: 0 },
-    // ];
+    this.vertexs = [];
 
     this.lastVertex = this.vertexs.map((vx) => ({ x: vx.x, y: vx.y }));
 
@@ -90,7 +84,7 @@ export default class Line extends ObjectNode {
     copyLine.opacity = this.opacity;
     copyLine.lineColor = this.lineColor;
     copyLine.lineType = this.lineType;
-    copyLine.lastSize = {x: this.lastSize.x, y: this.lastSize.y};
+    copyLine.lastSize = { x: this.lastSize.x, y: this.lastSize.y };
     copyLine.vertexs = this.vertexs.map((vx) => ({ x: vx.x, y: vx.y }));
     copyLine.lastVertex = this.lastVertex.map((vx) => ({ x: vx.x, y: vx.y }));
 
@@ -261,6 +255,8 @@ export default class Line extends ObjectNode {
    * @param {number} index
    */
   repostionVertex = (index) => {
+    if (useToolStore.getState().current !== useToolStore.getState().TOOLS.SELECT)
+      return;
     const vertex = this.vertexs[index];
     // Relative Pos
     vertex.x = (this.lastVertex[index].x * this.size.x) / this.lastSize.x;

@@ -9,20 +9,6 @@ export default class SelectRect extends ObjectNode {
     this.single = true;
   }
 
-  /**
-   *
-   * @param {Vector2} position1
-   * @param {Vector2} position2
-   * @returns {number}
-   */
-  checkDistance = (position1, position2) => {
-    return Math.abs(
-      Math.sqrt(
-        (position2.x - position1.x) ** 2 + (position2.y - position1.y) ** 2
-      )
-    );
-  };
-
   shapesOnArea = () => {
     const instances = Object.values(
       this._GAME.currentRoom._INSTANCES
