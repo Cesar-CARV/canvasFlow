@@ -43,7 +43,7 @@ class RoomTest extends Room {
       }
       // EASER
       if (E_KEY) {
-        useToolStore.getState().setTool("EASER");
+        useToolStore.getState().setTool("ERASER");
         useCanvasStore.getState().setShapesSelected([]);
       }
       // MAKE_SHAPE

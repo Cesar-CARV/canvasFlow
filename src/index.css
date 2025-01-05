@@ -1,5 +1,14 @@
-/* Css Reset june 2024 */
+:root {
+  --background-color: #111;
+  --section-color: #191919;
+  --box-color: #313131;
+  --border-color: #4b4b4b;
+  --primary-color: #f6ffc1;
+  --text-color: #fafafa;
+  --sub-text-color: #b4b4b4;
+}
 
+/* Css Reset june 2024 */
 * {
   margin: 0;
   padding: 0;
