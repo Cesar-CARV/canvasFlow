@@ -21,37 +21,58 @@ class RoomTest extends Room {
     // Tool controller
     const toolController = new ObjectNode(GAME, 0, 0, 0, 0);
     toolController.steps = () => {
-      const SHIFT_KEY = GAME.input.GetKeyDown("SHIFT");
-      const S_KEY = GAME.input.GetKeyDown("s") || GAME.input.GetKeyDown("S");
-      const P_KEY = GAME.input.GetKeyDown("p") || GAME.input.GetKeyDown("P");
-      const E_KEY = GAME.input.GetKeyDown("e") || GAME.input.GetKeyDown("E");
-      const M_KEY = GAME.input.GetKeyDown("m") || GAME.input.GetKeyDown("M");
+      const SELECT_KEY = GAME.input.GetKeyDown("1");
+      const HAND_KEY = GAME.input.GetKeyDown("2");
+      const SQUARE_KEY = GAME.input.GetKeyDown("3");
+      const CIRCLE_KEY = GAME.input.GetKeyDown("4");
+      const LINE_KEY = GAME.input.GetKeyDown("5");
+      const ARROW_KEY = GAME.input.GetKeyDown("6");
+      const PEN_KEY = GAME.input.GetKeyDown("7");
+      const ERASER_KEY = GAME.input.GetKeyDown("8");
+      const IMAGE_KEY = GAME.input.GetKeyDown("9");
 
       // RETURN CONDITION
-      if (SHIFT_KEY) return;
+      if (
+        !SELECT_KEY &&
+        !HAND_KEY &&
+        !SQUARE_KEY &&
+        !CIRCLE_KEY &&
+        !LINE_KEY &&
+        !ARROW_KEY &&
+        !PEN_KEY &&
+        !ERASER_KEY &&
+        !IMAGE_KEY
+      )
+        return;
 
-      // SELECT
-      if (S_KEY) {
+      if (SELECT_KEY) {
         useToolStore.getState().setTool("SELECT");
-        useCanvasStore.getState().setShapesSelected([]);
       }
-      
-      // PEN
-      if (P_KEY) {
+      else if (HAND_KEY) {
+        useToolStore.getState().setTool("HAND");
+      }
+      else if (SQUARE_KEY) {
+        useToolStore.getState().setTool("SQUARE");
+      }
+      else if (CIRCLE_KEY) {
+        useToolStore.getState().setTool("CIRCLE");
+      }
+      else if (LINE_KEY) {
+        useToolStore.getState().setTool("LINE");
+      }
+      else if (ARROW_KEY) {
+        useToolStore.getState().setTool("ARROW");
+      }
+      else if (PEN_KEY) {
         useToolStore.getState().setTool("PEN");
-        useCanvasStore.getState().setShapesSelected([]);
       }
-      // EASER
-      if (E_KEY) {
+      else if (ERASER_KEY) {
         useToolStore.getState().setTool("ERASER");
-        useCanvasStore.getState().setShapesSelected([]);
       }
-      // MAKE_SHAPE
-      if (M_KEY) {
-        useToolStore.getState().setTool("MAKE_SHAPE");
-        useCanvasStore.getState().setShapesSelected([]);
+      else if (IMAGE_KEY) {
+        useToolStore.getState().setTool("IMAGE");
       }
-    }
+    };
 
     this.addInstance(shape, false, "shape01");
     this.addInstance(shape2, false, "shape02");
