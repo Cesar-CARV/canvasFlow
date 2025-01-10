@@ -27,7 +27,7 @@ export default class Shape extends ObjectNode {
     this.velocity = new Vector2(0, 0);
 
     this.setBorderColor("00", "00", "00");
-    this.setBackgroundColor("ff", "88", "00");
+    this.setBackgroundColor("ee", "ee", "ee");
   }
 
   /**
