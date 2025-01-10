@@ -4,6 +4,7 @@ import SelectTool from "../Tools/SelectTool/SelectTool";
 import PenTool from "../Tools/PenTool";
 import useToolStore from "../../store/ToolStore";
 import useCanvasStore from "../../store/CanvasStore";
+import MakeShapeTool from "../Tools/MakeShapeTool";
 
 class RoomTest extends Room {
   constructor(GAME) {
@@ -79,6 +80,8 @@ class RoomTest extends Room {
     this.addInstance(toolController, false, "tool-controller");
     this.addInstance(new SelectTool(GAME), false, "select-tool");
     this.addInstance(new PenTool(GAME), false, "pen-tool");
+    this.addInstance(new MakeShapeTool(GAME), false, "makeShape-tool");
+    
 
     // useToolStore.getState().setTool("PEN");
   }
