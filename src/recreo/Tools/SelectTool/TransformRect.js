@@ -1,5 +1,6 @@
 import { ObjectNode, Vector2 } from "recreo";
 import useCanvasStore from "../../../store/CanvasStore";
+import useToolStore from "../../../store/ToolStore";
 
 export default class TransformRect extends ObjectNode {
   constructor(GAME) {
@@ -307,6 +308,10 @@ export default class TransformRect extends ObjectNode {
    * @param {CanvasRenderingContext2D} ctx
    */
   draw = (ctx) => {
+    if (
+      useToolStore.getState().current !== useToolStore.getState().TOOLS.SELECT
+    )
+      return;
     if (!this._PARENT.transform) return;
     ctx.save();
     ctx.fillStyle = "#F6FFC155";
@@ -356,6 +361,10 @@ export default class TransformRect extends ObjectNode {
    * @param {number} deltatime
    */
   steps = (deltatime) => {
+    if (
+      useToolStore.getState().current !== useToolStore.getState().TOOLS.SELECT
+    )
+      return;
     if (!this._PARENT.transform) return;
 
     const mouseCoords = this._GAME.input.GetMouseCords();

@@ -81,6 +81,7 @@ export default class Line extends ObjectNode {
     );
 
     copyLine.lineWidth = this.lineWidth;
+    copyLine.arrow = this.arrow;
     copyLine.opacity = this.opacity;
     copyLine.lineColor = this.lineColor;
     copyLine.lineType = this.lineType;
@@ -255,7 +256,9 @@ export default class Line extends ObjectNode {
    * @param {number} index
    */
   repostionVertex = (index) => {
-    if (useToolStore.getState().current !== useToolStore.getState().TOOLS.SELECT)
+    if (
+      useToolStore.getState().current !== useToolStore.getState().TOOLS.SELECT
+    )
       return;
     const vertex = this.vertexs[index];
     // Relative Pos
@@ -271,12 +274,6 @@ export default class Line extends ObjectNode {
       for (let i = 0; i < this.vertexs.length; i++) {
         this.repostionVertex(i);
       }
-    }
-
-    if (this._GAME.input.GetMouseUp(0)) {
-      this.lastSize.x = this.size.x;
-      this.lastSize.y = this.size.y;
-      this.lastVertex = this.vertexs.map((vx) => ({ x: vx.x, y: vx.y }));
     }
   };
 }
