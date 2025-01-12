@@ -1,10 +1,10 @@
 import { ObjectNode, Room } from "recreo";
-import Shape from "../Objects/Shape";
 import SelectTool from "../Tools/SelectTool/SelectTool";
 import PenTool from "../Tools/PenTool";
 import useToolStore from "../../store/ToolStore";
 import useCanvasStore from "../../store/CanvasStore";
 import MakeShapeTool from "../Tools/MakeShapeTool";
+import LineArrow from "../Tools/LineArrow";
 
 class RoomTest extends Room {
   constructor(GAME) {
@@ -39,30 +39,36 @@ class RoomTest extends Room {
 
       if (SELECT_KEY) {
         useToolStore.getState().setTool("SELECT");
-      }
-      else if (HAND_KEY) {
+      } else if (HAND_KEY) {
         useToolStore.getState().setTool("HAND");
-      }
-      else if (SQUARE_KEY) {
+      } else if (SQUARE_KEY) {
         useToolStore.getState().setTool("SQUARE");
-      }
-      else if (CIRCLE_KEY) {
+      } else if (CIRCLE_KEY) {
         useToolStore.getState().setTool("CIRCLE");
-      }
-      else if (LINE_KEY) {
+      } else if (LINE_KEY) {
         useToolStore.getState().setTool("LINE");
-      }
-      else if (ARROW_KEY) {
+      } else if (ARROW_KEY) {
         useToolStore.getState().setTool("ARROW");
-      }
-      else if (PEN_KEY) {
+      } else if (PEN_KEY) {
         useToolStore.getState().setTool("PEN");
-      }
-      else if (ERASER_KEY) {
+      } else if (ERASER_KEY) {
         useToolStore.getState().setTool("ERASER");
-      }
-      else if (IMAGE_KEY) {
+      } else if (IMAGE_KEY) {
         useToolStore.getState().setTool("IMAGE");
+      }
+
+      if (
+        SELECT_KEY ||
+        HAND_KEY ||
+        SQUARE_KEY ||
+        CIRCLE_KEY ||
+        LINE_KEY ||
+        ARROW_KEY ||
+        PEN_KEY ||
+        ERASER_KEY ||
+        IMAGE_KEY
+      ) {
+        useCanvasStore.getState().setShapesSelected([]);
       }
     };
 
@@ -70,7 +76,7 @@ class RoomTest extends Room {
     this.addInstance(new SelectTool(GAME), false, "select-tool");
     this.addInstance(new PenTool(GAME), false, "pen-tool");
     this.addInstance(new MakeShapeTool(GAME), false, "makeShape-tool");
-    
+    this.addInstance(new LineArrow(GAME), false, "lineArrow-tool");
 
     // useToolStore.getState().setTool("PEN");
   }

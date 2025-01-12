@@ -1,14 +1,13 @@
 import { ObjectNode } from "recreo";
 import useToolStore from "../../store/ToolStore";
-import { checkDistance } from "../../utils/checkDistance";
 import Line from "../Objects/Line";
 
 export default class PenTool extends ObjectNode {
   constructor(GAME) {
     super(GAME, 0, 0, 0, 0);
     this.lastMouseCoords = { x: undefined, y: undefined };
-    this.line = undefined;
     this.drawing = false;
+    this.line = undefined;
 
     this.minX = undefined;
     this.maxX = undefined;
@@ -27,6 +26,7 @@ export default class PenTool extends ObjectNode {
 
   endDraw = () => {
     if (!this.drawing && this.line) {
+      this.line.vertexs.pop();
       const diffX = this.line.position.x - this.minX;
       const diffY = this.line.position.y - this.minY;
 
@@ -67,7 +67,12 @@ export default class PenTool extends ObjectNode {
    * @param {number} deltatime
    */
   steps = () => {
-    if (useToolStore.getState().current !== useToolStore.getState().TOOLS.PEN) {
+    const arrowTool =
+      useToolStore.getState().current === useToolStore.getState().TOOLS.ARROW;
+    const lineTool =
+      useToolStore.getState().current === useToolStore.getState().TOOLS.LINE;
+
+    if (!arrowTool && !lineTool) {
       if (this.drawing) {
         this.drawing = false;
         // End draw
@@ -76,32 +81,34 @@ export default class PenTool extends ObjectNode {
       return;
     }
 
+    // Set arrow
+    if (this.line) {
+      this.line.arrow = arrowTool;
+    }
+
     const mouseCoords = this._GAME.input.GetMouseCords();
 
     // Start draw
     if (this._GAME.input.GetMouseDown(0)) {
       this.drawing = true;
       this.setLastMouseCoords(mouseCoords);
-      this.line = new Line(this._GAME, mouseCoords.x, mouseCoords.y, 50, 50);
-    }
-
-    // Draw Line
-    if (this._GAME.input.GetMousePress(0)) {
-      if (checkDistance(this.lastMouseCoords, mouseCoords) >= 10) {
+      if (!this.line) {
+        this.line = new Line(this._GAME, mouseCoords.x, mouseCoords.y, 50, 50);
+        this._GAME.currentRoom.addInstance(
+          this.line,
+          false,
+          "line-" + Math.random().toString().split(".")[1]
+        );
+      }
+      this.line.vertexs.push({
+        x: mouseCoords.x - this.line.position.x,
+        y: mouseCoords.y - this.line.position.y,
+      });
+      if (this.line.vertexs.length === 1) {
         this.line.vertexs.push({
           x: mouseCoords.x - this.line.position.x,
           y: mouseCoords.y - this.line.position.y,
         });
-
-        if (this.line.vertexs.length === 1) {
-          this._GAME.currentRoom.addInstance(
-            this.line,
-            false,
-            "line-" + Math.random().toString().split(".")[1]
-          );
-        }
-
-        this.setLastMouseCoords(mouseCoords);
       }
 
       // Calculate min max Coords
@@ -119,11 +126,19 @@ export default class PenTool extends ObjectNode {
         : Math.max(this.maxY, mouseCoords.y);
     }
 
+    // Draw Line
+    if (this.line) {
+      this.line.vertexs[this.line.vertexs.length - 1].x =
+        mouseCoords.x - this.line.position.x;
+      this.line.vertexs[this.line.vertexs.length - 1].y =
+        mouseCoords.y - this.line.position.y;
+      this.setLastMouseCoords(mouseCoords);
+    }
+
     // End draw
     if (this._GAME.input.GetMouseUp(2)) {
       this.drawing = false;
     }
-
     this.endDraw();
   };
 }
