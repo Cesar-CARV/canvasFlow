@@ -4,7 +4,8 @@ import PenTool from "../Tools/PenTool";
 import useToolStore from "../../store/ToolStore";
 import useCanvasStore from "../../store/CanvasStore";
 import MakeShapeTool from "../Tools/MakeShapeTool";
-import LineArrow from "../Tools/LineArrow";
+import LineArrow from "../Tools/LineArrowTool";
+import EraserTool from "../Tools/EraserTool";
 
 class RoomTest extends Room {
   constructor(GAME) {
@@ -77,6 +78,7 @@ class RoomTest extends Room {
     this.addInstance(new PenTool(GAME), false, "pen-tool");
     this.addInstance(new MakeShapeTool(GAME), false, "makeShape-tool");
     this.addInstance(new LineArrow(GAME), false, "lineArrow-tool");
+    this.addInstance(new EraserTool(GAME), false, "eraser-tool");
 
     // useToolStore.getState().setTool("PEN");
   }
