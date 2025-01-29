@@ -1,14 +1,17 @@
 import Canvas from "./components/Canvas/Canvas";
 import Toolbar from "./components/Toolbar/Toolbar";
 import { CanvasProvider } from "./context/CanvasContext";
+import { ModalProvider } from "./context/ModalContext";
 
 function App() {
   return (
     <>
-      <CanvasProvider>
-        <Toolbar></Toolbar>
-        <Canvas></Canvas>
-      </CanvasProvider>
+      <ModalProvider>
+        <CanvasProvider>
+          <Toolbar></Toolbar>
+          <Canvas></Canvas>
+        </CanvasProvider>
+      </ModalProvider>
     </>
   );
 }
